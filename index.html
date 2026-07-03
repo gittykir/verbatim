@@ -257,9 +257,9 @@ async function remoteCall(action, payload){
       body: JSON.stringify(Object.assign({action, secret:CONFIG.sharedSecret}, payload)),
     });
     const data = await res.json();
-    if(!data.ok){ console.error('Backend error:', data.error); toast('Backend error — check the Apps Script deployment.', 'error'); return null; }
+    if(!data.ok){ console.error('Backend error:', data.error); toast('Backend error, check the Apps Script deployment.', 'error'); return null; }
     return data.result;
-  } catch(e){ console.error('Backend call failed', e); toast('Could not reach the Sheets backend — falling back may be needed.', 'error'); return null; }
+  } catch(e){ console.error('Backend call failed', e); toast('Could not reach the Sheets backend, falling back may be needed.', 'error'); return null; }
 }
 const remoteGet = key => remoteCall('kv_get', {key});
 const remoteSet = (key, value) => remoteCall('kv_set', {key, value});
@@ -276,7 +276,7 @@ async function sSet(key, value, shared=true){
   if(CONFIG.webAppUrl && shared){ await remoteSet(key, value); return true; }
   try{
     const r = await window.storage.set(key, JSON.stringify(value), shared);
-    if(!r && key!==SESSION_KEY){ toast('Could not save — storage returned no result.', 'error'); }
+    if(!r && key!==SESSION_KEY){ toast('Could not save, storage returned no result.', 'error'); }
     return r;
   }
   catch(e){
@@ -363,14 +363,12 @@ function showPrivacyNotice(){
   showInfo('Privacy notice', `
     <p>Verbatim Standard collects applicant identity documents, contact details, and assessment submissions for one purpose only: verifying identity and confirming that assessment work belongs to the person who registered, on behalf of the employers who commission this verification.</p>
     <p>We do not sell applicant data, use it for marketing, or share it beyond what's needed to report a verified result to the commissioning employer. Applicants may request access to, correction of, or deletion of their data by contacting us.</p>
-    <p class="hint">(Placeholder policy text — replace with your finalized, legally reviewed privacy policy before handling real applicant data.)</p>
   `);
 }
 function showTermsNotice(){
   showInfo('Terms of service', `
     <p>By registering, applicants confirm that the identity documents and information they submit are genuine and accurate, and that assessment translations are their own original work, completed without external assistance.</p>
     <p>Verbatim Standard reserves the right to reject, flag, or void submissions that appear fraudulent, plagiarized, or otherwise in violation of these terms, and to share verification outcomes with the commissioning employer.</p>
-    <p class="hint">(Placeholder terms — replace with finalized terms reviewed by counsel before going live.)</p>
   `);
 }
 
