@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Verbatim Standard — Independent Translator Verification</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1c2430;
+  --paper:#eeefe6;
+  --paper-raised:#f7f7f1;
+  --gold:#a9843c;
+  --teal:#2f6b67;
+  --brick:#a6432f;
+  --line:#d8d6c8;
+  --muted:#6b6f66;
+}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:'Inter',sans-serif;line-height:1.55;}
+h1,h2,h3,.display{font-family:'Source Serif 4',serif;font-weight:600;letter-spacing:-0.005em;}
+.mono{font-family:'IBM Plex Mono',monospace;}
+a{color:inherit;}
+button{font-family:inherit;cursor:pointer;}
+::selection{background:var(--gold);color:var(--paper);}
+
+/* Top bar */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:18px 32px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--paper);z-index:50;flex-wrap:wrap;gap:10px;}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand-mark{width:30px;height:30px;flex:none;}
+.brand-name{font-family:'Source Serif 4',serif;font-weight:600;font-size:19px;}
+.brand-tag{font-size:11px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-top:-2px;}
+nav{display:flex;gap:4px;flex-wrap:wrap;}
+nav button{background:none;border:1px solid transparent;padding:8px 14px;border-radius:3px;font-size:14px;color:var(--ink);}
+nav button.active{border-color:var(--ink);background:var(--ink);color:var(--paper);}
+nav button:not(.active):hover{border-color:var(--line);background:var(--paper-raised);}
+
+main{max-width:980px;margin:0 auto;padding:40px 28px 90px;}
+.eyebrow{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:600;margin-bottom:10px;}
+.hero h1{font-size:clamp(30px,4vw,46px);margin:0 0 14px;max-width:16ch;}
+.hero p.lead{font-size:17px;max-width:56ch;color:#333;}
+.card{background:var(--paper-raised);border:1px solid var(--line);border-radius:6px;padding:26px;margin-bottom:20px;}
+.card h3{margin-top:0;font-size:18px;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+@media(max-width:720px){.grid2{grid-template-columns:1fr;}main{padding:28px 18px 70px;}.topbar{padding:14px 18px;}}
+
+.btn{display:inline-block;padding:11px 22px;border-radius:3px;border:1px solid var(--ink);background:var(--ink);color:var(--paper);font-size:14px;font-weight:600;letter-spacing:.02em;}
+.btn:hover{background:#333c4a;}
+.btn.secondary{background:none;color:var(--ink);}
+.btn.secondary:hover{background:var(--paper-raised);}
+.btn.gold{background:var(--gold);border-color:var(--gold);color:#1c1408;}
+.btn:disabled{opacity:.45;cursor:not-allowed;}
+
+label{display:block;font-size:12.5px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin:14px 0 6px;}
+input[type=text],input[type=tel],input[type=password],select,textarea{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:3px;background:#fff;font-family:inherit;font-size:14.5px;color:var(--ink);}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--teal);outline-offset:1px;}
+.filefield{border:1px dashed var(--line);border-radius:4px;padding:14px;background:#fff;font-size:13.5px;}
+.hint{font-size:12.5px;color:var(--muted);margin-top:4px;}
+.req{color:var(--brick);}
+
+.notice{border-left:3px solid var(--gold);background:#fbf6ea;padding:14px 16px;font-size:13.8px;border-radius:0 4px 4px 0;margin:16px 0;}
+.notice.teal{border-color:var(--teal);background:#eef5f4;}
+.notice.brick{border-color:var(--brick);background:#faeeeb;}
+
+table{width:100%;border-collapse:collapse;font-size:13.5px;}
+th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top;}
+th{font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600;}
+.badge{display:inline-block;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:600;letter-spacing:.03em;}
+.badge.pending{background:#efe6ce;color:#6b5417;}
+.badge.submitted{background:#dbe8e6;color:var(--teal);}
+.badge.scored{background:#dde3d3;color:#3f5a2a;}
+.badge.verified{background:#dde3d3;color:#3f5a2a;}
+.badge.under_review{background:#e4e0f0;color:#4d3f80;}
+.badge.needs_resubmission{background:#f4e2c8;color:#8a5a10;}
+.badge.rejected{background:#f3dbd6;color:var(--brick);}
+
+.tabbar{display:flex;gap:6px;margin:18px 0 20px;border-bottom:1px solid var(--line);}
+.tabbar button{background:none;border:none;padding:9px 4px;margin-right:20px;font-size:13.5px;color:var(--muted);border-bottom:2px solid transparent;}
+.tabbar button.active{color:var(--ink);font-weight:600;border-color:var(--gold);}
+.tabbar button:hover{color:var(--ink);}
+
+.checklist-group{margin-bottom:14px;}
+.checklist-group h4{font-size:12.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);margin:0 0 8px;}
+.check-row{display:flex;align-items:flex-start;gap:8px;padding:5px 0;font-size:14px;}
+.check-row input{margin-top:3px;width:auto;}
+.review-history{border-left:2px solid var(--line);padding-left:14px;margin-top:6px;}
+.review-entry{margin-bottom:10px;font-size:13px;}
+.review-entry .who{font-weight:600;}
+.linklike{background:none;border:none;color:var(--teal);text-decoration:underline;font-size:13px;padding:0;}
+
+#toastHost{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:200;display:flex;flex-direction:column;gap:8px;align-items:center;}
+.toast{background:var(--ink);color:var(--paper);padding:11px 18px;border-radius:5px;font-size:13.5px;box-shadow:0 4px 14px rgba(0,0,0,.18);max-width:420px;text-align:center;animation:toastIn .18s ease-out;}
+.toast.error{background:var(--brick);}
+.toast.success{background:var(--teal);}
+@keyframes toastIn{from{opacity:0;transform:translateY(-8px);}to{opacity:1;transform:translateY(0);}}
+.modal-overlay{position:fixed;inset:0;background:rgba(28,36,48,.55);display:flex;align-items:center;justify-content:center;z-index:210;}
+.modal-box{background:#fff;border-radius:6px;padding:24px;max-width:400px;width:90%;box-shadow:0 10px 40px rgba(0,0,0,.25);}
+.modal-box p{font-size:14.5px;margin:0 0 18px;}
+.modal-actions{display:flex;justify-content:flex-end;gap:10px;}
+
+.pentagon-wrap{display:flex;justify-content:center;margin:18px 0;}
+.pill{display:inline-flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);padding:6px 12px 6px 10px;border-radius:20px;font-size:13px;margin:4px 6px 4px 0;}
+.pill button{background:none;border:none;color:var(--brick);font-size:15px;line-height:1;padding:0;}
+
+.steps{display:flex;gap:0;margin-bottom:28px;}
+.step{flex:1;text-align:center;padding-bottom:10px;border-bottom:3px solid var(--line);font-size:12.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);}
+.step.active{border-color:var(--ink);color:var(--ink);font-weight:600;}
+.step.done{border-color:var(--teal);color:var(--teal);}
+
+.passage-box{background:#fff;border:1px solid var(--line);border-radius:4px;padding:20px;font-size:15.5px;line-height:1.7;-webkit-user-select:none;user-select:none;position:relative;}
+.passage-box::after{content:"Source text · selection disabled";position:absolute;bottom:6px;right:10px;font-size:10.5px;color:var(--muted);font-family:'IBM Plex Mono',monospace;}
+textarea.answer{min-height:220px;resize:vertical;font-size:15px;line-height:1.6;}
+.meta-row{display:flex;justify-content:space-between;font-size:12.5px;color:var(--muted);margin-top:6px;flex-wrap:wrap;gap:6px;}
+.paste-warn{display:none;background:var(--brick);color:#fff;padding:8px 12px;border-radius:3px;font-size:13px;margin-top:8px;}
+
+.ref-box{background:var(--ink);color:var(--paper);padding:22px 26px;border-radius:6px;text-align:center;margin:18px 0;}
+.ref-box .code{font-family:'IBM Plex Mono',monospace;font-size:24px;letter-spacing:.06em;color:var(--gold);margin-top:6px;}
+
+footer{border-top:1px solid var(--line);padding:28px 32px;font-size:12.5px;color:var(--muted);text-align:center;}
+.footer-brand{font-family:'Source Serif 4',serif;font-weight:600;color:var(--ink);font-size:14px;margin-bottom:8px;}
+.footer-links{display:flex;justify-content:center;gap:18px;flex-wrap:wrap;margin-bottom:8px;}
+.footer-links a, .footer-links button{color:var(--ink);text-decoration:none;font-size:12.5px;background:none;border:none;padding:0;cursor:pointer;}
+.footer-links a:hover, .footer-links button:hover{text-decoration:underline;color:var(--teal);}
+.footer-copyright{font-size:11.5px;color:var(--muted);}
+.small{font-size:12.5px;color:var(--muted);}
+.divider{height:1px;background:var(--line);margin:22px 0;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">
+    <svg class="brand-mark" viewBox="0 0 40 40"><polygon points="20,3 35,14 29,34 11,34 5,14" fill="none" stroke="#a9843c" stroke-width="2"/><circle cx="20" cy="20" r="3" fill="#2f6b67"/></svg>
+    <div><div class="brand-name">Verbatim Standard</div><div class="brand-tag">Independent Translator Verification</div></div>
+  </div>
+  <nav id="nav"></nav>
+</div>
+
+<main id="app"></main>
+
+<footer>
+  <div class="footer-brand">Verbatim Standard</div>
+  <div class="footer-links">
+    <a href="mailto:hello@verbatimstandard.com">Contact us</a>
+    <button onclick="showPrivacyNotice()">Privacy notice</button>
+    <button onclick="showTermsNotice()">Terms of service</button>
+  </div>
+  <div class="footer-copyright">© 2026 Verbatim Standard. Independent translator identity and skill verification.</div>
+</footer>
+
+<div id="infoModalHost" class="modal-overlay" style="display:none;">
+  <div class="modal-box" style="max-width:520px;">
+    <h3 id="infoModalTitle" style="margin-top:0;"></h3>
+    <div id="infoModalBody" class="small" style="max-height:340px;overflow-y:auto;line-height:1.65;text-align:left;"></div>
+    <div class="modal-actions"><button class="btn secondary" id="infoModalClose">Close</button></div>
+  </div>
+</div>
+
+<div id="toastHost"></div>
+<div id="modalHost" class="modal-overlay" style="display:none;">
+  <div class="modal-box">
+    <p id="modalMsg"></p>
+    <div class="modal-actions">
+      <button class="btn secondary" id="modalCancel">Cancel</button>
+      <button class="btn gold" id="modalOk">OK</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ===================== Config ===================== */
+const LANGS = [
+  {code:'EN', name:'English'},
+  {code:'ES', name:'Spanish'},
+  {code:'IT', name:'Italian'},
+  {code:'DE', name:'German'},
+  {code:'FR', name:'French'},
+];
+const langName = c => LANGS.find(l=>l.code===c)?.name || c;
+
+const COUNTRIES = [
+  // East Africa (primary market)
+  {name:'Kenya', code:'+254'}, {name:'Uganda', code:'+256'}, {name:'Tanzania', code:'+255'},
+  {name:'Rwanda', code:'+250'}, {name:'Burundi', code:'+257'}, {name:'South Sudan', code:'+211'},
+  {name:'Ethiopia', code:'+251'}, {name:'Somalia', code:'+252'},
+  // Rest of Africa
+  {name:'Nigeria', code:'+234'}, {name:'Ghana', code:'+233'}, {name:'South Africa', code:'+27'},
+  {name:'Egypt', code:'+20'}, {name:'Morocco', code:'+212'}, {name:'Algeria', code:'+213'},
+  {name:'Tunisia', code:'+216'}, {name:'Senegal', code:'+221'}, {name:"Côte d'Ivoire", code:'+225'},
+  {name:'Cameroon', code:'+237'}, {name:'DR Congo', code:'+243'}, {name:'Republic of Congo', code:'+242'},
+  {name:'Zambia', code:'+260'}, {name:'Zimbabwe', code:'+263'}, {name:'Botswana', code:'+267'},
+  {name:'Namibia', code:'+264'}, {name:'Mozambique', code:'+258'}, {name:'Malawi', code:'+265'},
+  {name:'Angola', code:'+244'}, {name:'Sudan', code:'+249'}, {name:'Libya', code:'+218'},
+  {name:'Mali', code:'+223'}, {name:'Benin', code:'+229'}, {name:'Togo', code:'+228'},
+  // Europe (language-relevant)
+  {name:'Spain', code:'+34'}, {name:'Italy', code:'+39'}, {name:'Germany', code:'+49'},
+  {name:'France', code:'+33'}, {name:'United Kingdom', code:'+44'}, {name:'Portugal', code:'+351'},
+  {name:'Switzerland', code:'+41'}, {name:'Austria', code:'+43'}, {name:'Belgium', code:'+32'},
+  {name:'Netherlands', code:'+31'}, {name:'Ireland', code:'+353'}, {name:'Sweden', code:'+46'},
+  {name:'Poland', code:'+48'},
+  // Americas & Asia-Pacific & Middle East
+  {name:'United States', code:'+1'}, {name:'Canada', code:'+1'}, {name:'Mexico', code:'+52'},
+  {name:'Brazil', code:'+55'}, {name:'Argentina', code:'+54'}, {name:'Colombia', code:'+57'},
+  {name:'Chile', code:'+56'}, {name:'Peru', code:'+51'}, {name:'India', code:'+91'},
+  {name:'China', code:'+86'}, {name:'Japan', code:'+81'}, {name:'Australia', code:'+61'},
+  {name:'United Arab Emirates', code:'+971'}, {name:'Saudi Arabia', code:'+966'}, {name:'Qatar', code:'+974'},
+  {name:'Other', code:'+'},
+];
+const dialCodeFor = name => { const m = COUNTRIES.find(c=>c.name===name); return m ? m.code : ''; };
+
+const PASSAGES = {
+  EN: [
+    {id:'EN1', title:'Microgrids', text:"In the hills outside Nakuru, a cooperative of smallholder farmers recently financed a solar microgrid that now powers three villages after dark. The project took eighteen months longer than planned, mostly because the original battery supplier could not guarantee delivery through the rainy season. What made the difference, according to the project's engineer, was not the hardware but the willingness of residents to renegotiate tariffs twice as usage patterns shifted. Streetlights that once switched off at nine now stay lit until the last matatu passes. Shopkeepers report a modest but steady rise in evening trade. None of this was in the original feasibility study, which focused almost entirely on generation capacity rather than on how a community actually lives with power once it arrives."},
+    {id:'EN2', title:'Bakery', text:"My grandmother kept her bread recipe in a notebook so worn that entire lines had dissolved into the grease of forty years' handling. When we finally reopened her bakery last spring, we typed the recipe up properly, converted the measurements, and installed a proofing cabinet she would have found faintly absurd. The bread tastes almost the same, though our baker insists the difference is in the water, not the method. Regular customers seem not to notice, or perhaps they are simply too polite to say. What has changed is the queue: it now forms before we unlock the door, something that never happened in her time, when the smell alone was enough to draw people in slowly."},
+  ],
+  ES: [
+    {id:'ES1', title:'Café andino', text:"La cooperativa cafetera de la ladera lleva casi veinte años exportando sin intermediarios, algo que sus fundadores consideraban imposible cuando empezaron. El cambio no vino de una gran inversión, sino de un contrato de tres años con un tostador europeo dispuesto a pagar por adelantado. Ese adelanto permitió comprar una despulpadora que redujo las pérdidas poscosecha casi a la mitad. Los socios más jóvenes quieren ahora certificar el cultivo como orgánico, mientras que los mayores temen que el trámite consuma más tiempo del que vale. La cosecha de este año fue menor de lo esperado por las lluvias tardías, pero la calidad, según los catadores, fue la mejor en una década."},
+    {id:'ES2', title:'Bicis en Madrid', text:"Cuando se inauguró el primer carril bici protegido en Madrid, buena parte del comercio local se opuso, convencido de que perdería clientes que llegaban en coche. Tres años después, varios de esos mismos comerciantes piden que se amplíe la red hasta su calle. El ayuntamiento nunca hizo una campaña de comunicación especialmente agresiva; el cambio de opinión parece haber sido, sobre todo, resultado de ver los datos de ventas trimestre tras trimestre. No todo ha sido sencillo: los repartidores de mercancías siguen quejándose de la falta de zonas de carga, y ese conflicto, a diferencia del anterior, todavía no tiene una solución clara sobre la mesa."},
+  ],
+  IT: [
+    {id:'IT1', title:'Ceramiche', text:"Nella bottega di Caltagirone, il forno a legna viene acceso ancora due volte alla settimana, non per scelta puramente tradizionalista ma perché il maestro ceramista sostiene che la cottura elettrica appiattisce le sfumature dello smalto blu che rende famosi i suoi pezzi. I nipoti, che gestiscono ormai la parte commerciale, vorrebbero digitalizzare il catalogo e vendere online, e su questo il nonno non si oppone affatto. La vera discussione in famiglia riguarda invece gli apprendisti: lui ne vuole uno solo alla volta, convinto che la tecnica si trasmetta per osservazione lenta, mentre i nipoti pensano che formarne tre insieme sia l'unico modo per non perdere il mestiere quando lui non ci sarà più."},
+    {id:'IT2', title:'Milano sostenibile', text:"Durante l'ultima settimana della moda, due marchi emergenti hanno presentato collezioni realizzate interamente con tessuti recuperati da magazzini invenduti, una scelta che fino a pochi anni fa sarebbe stata percepita come un compromesso estetico. Quest'anno, invece, i compratori internazionali hanno mostrato più interesse proprio per quei due marchi che per alcune case più affermate. Resta però un problema logistico non piccolo: reperire quantità sufficienti dello stesso tessuto recuperato per produzioni superiori a poche decine di pezzi è quasi impossibile, il che costringe questi marchi a lavorare per piccole serie numerate invece che per collezioni tradizionali su larga scala."},
+  ],
+  DE: [
+    {id:'DE1', title:'Uhrmacher', text:"In der kleinen Werkstatt im Schwarzwald werden die Zahnräder noch immer von Hand nachgefeilt, obwohl eine neue Fräsmaschine im Nebenraum seit Monaten ungenutzt steht. Der Uhrmacher, mittlerweile über siebzig, sagt, er traue der Maschine die letzten zwei Hundertstel Millimeter nicht zu, die über den charakteristischen Gang seiner Uhren entscheiden. Sein Sohn, der die Auftragsannahme übernommen hat, sieht das anders und hat begonnen, einfachere Modelle testweise maschinell vorzufertigen. Die Kunden merken davon bislang nichts, und genau das ist der eigentliche Streitpunkt zwischen Vater und Sohn: ob dieses Schweigen ein gutes Zeichen ist oder nur bedeutet, dass noch niemand genau hingesehen hat."},
+    {id:'DE2', title:'Berliner Start-ups', text:"Als das Gründerteam vor vier Jahren aus einer Zwei-Zimmer-Wohnung in Neukölln startete, rechnete niemand damit, dass die Software einmal von drei mittelständischen Speditionen genutzt werden würde. Der eigentliche Wendepunkt kam nicht durch eine Finanzierungsrunde, sondern durch einen einzigen Kunden, der bereit war, monatelang Fehlermeldungen zu sammeln, statt einfach zu kündigen. Heute beschäftigt das Unternehmen zwölf Personen, doch die Gründerin erzählt offen, dass sie in den ersten beiden Jahren kurz davor war, aufzugeben, und zwar nicht wegen des Marktes, sondern wegen eines internen Streits darüber, ob man auf eine Nische setzen oder breiter wachsen sollte."},
+  ],
+  FR: [
+    {id:'FR1', title:'Lavande', text:"Sur le plateau, la récolte de lavande commence toujours avant l'aube, quand les huiles essentielles sont encore concentrées par la fraîcheur de la nuit. Cette année, la coopérative a dû composer avec une sécheresse plus longue que d'habitude, ce qui a réduit le rendement d'environ un tiers. Certains producteurs ont proposé d'investir dans l'irrigation au goutte-à-goutte, une idée que les plus anciens rejettent, estimant qu'elle changerait le goût même de l'huile essentielle. Le débat n'est toujours pas tranché, mais un accord provisoire a été trouvé : trois parcelles seront irriguées à titre expérimental, et les résultats seront comparés lors de l'assemblée générale de l'automne prochain."},
+    {id:'FR2', title:'Librairie parisienne', text:"La librairie du quartier a failli fermer trois fois en quinze ans, la dernière fois lorsque le loyer a augmenté de près de quarante pour cent en un an. Ce qui l'a sauvée n'est pas une subvention municipale, comme on aurait pu s'y attendre, mais une pétition lancée par les habitants, relayée ensuite par un journal local puis par une chaîne de télévision régionale. Le propriétaire, surpris par l'ampleur de la mobilisation, a finalement accepté de revoir son offre à la baisse. La libraire reconnaît volontiers que sans cette attention médiatique inattendue, elle aurait sans doute dû accepter de céder son bail à une enseigne de vêtements."},
+  ],
+};
+
+/* ===================== Storage helpers ===================== */
+
+// Once you've deployed meridian-sheets-backend.gs.js as a Google Apps Script
+// Web App, paste its URL here to switch applicant/assessment/review data over
+// to Google Sheets + Drive. Leave blank to keep using this prototype's local
+// storage (the session-only data below always stays local either way).
+const CONFIG = {
+  webAppUrl: '',
+  sharedSecret: 'meridian-dev-key', // must match SHARED_SECRET in the Apps Script
+  // Client-side gate only — visible to anyone who views this file's source.
+  // It deters casual access, not a determined visitor. Change it periodically,
+  // and treat the review queue as effectively public until this moves server-side.
+  adminPassphrase: 'meridian2026',
+};
+
+async function remoteCall(action, payload){
+  if(!CONFIG.webAppUrl) return null;
+  try{
+    const res = await fetch(CONFIG.webAppUrl, {
+      method:'POST',
+      // text/plain avoids a CORS preflight against the Apps Script endpoint
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body: JSON.stringify(Object.assign({action, secret:CONFIG.sharedSecret}, payload)),
+    });
+    const data = await res.json();
+    if(!data.ok){ console.error('Backend error:', data.error); toast('Backend error — check the Apps Script deployment.', 'error'); return null; }
+    return data.result;
+  } catch(e){ console.error('Backend call failed', e); toast('Could not reach the Sheets backend — falling back may be needed.', 'error'); return null; }
+}
+const remoteGet = key => remoteCall('kv_get', {key});
+const remoteSet = (key, value) => remoteCall('kv_set', {key, value});
+const remoteList = async prefix => (await remoteCall('kv_list', {prefix})) || [];
+const remoteUploadDoc = (applicantRef, docType, filename, base64, mimeType) =>
+  remoteCall('upload_doc', {applicantRef, docType, filename, base64, mimeType});
+
+async function sGet(key, shared=true){
+  if(CONFIG.webAppUrl && shared) return await remoteGet(key);
+  try{ const r = await window.storage.get(key, shared); return r? JSON.parse(r.value): null; }
+  catch(e){ return null; }
+}
+async function sSet(key, value, shared=true){
+  if(CONFIG.webAppUrl && shared){ await remoteSet(key, value); return true; }
+  try{
+    const r = await window.storage.set(key, JSON.stringify(value), shared);
+    if(!r && key!==SESSION_KEY){ toast('Could not save — storage returned no result.', 'error'); }
+    return r;
+  }
+  catch(e){
+    console.error('storage set failed', e);
+    if(key!==SESSION_KEY) toast('Could not save your data. Please try again.', 'error');
+    return null;
+  }
+}
+async function sList(prefix, shared=true){
+  if(CONFIG.webAppUrl && shared) return await remoteList(prefix);
+  try{ const r = await window.storage.list(prefix, shared); return r? r.keys : []; }
+  catch(e){ return []; }
+}
+
+function uid(){ return Math.random().toString(36).slice(2,10); }
+
+function fileToBase64(file){
+  return new Promise((resolve, reject)=>{
+    const r = new FileReader();
+    r.onload = () => resolve(r.result.split(',')[1]);
+    r.onerror = () => reject(new Error('Could not read file'));
+    r.readAsDataURL(file);
+  });
+}
+
+const MAX_DOC_SIZE_BYTES = 8 * 1024 * 1024; // 8MB — Apps Script/Drive comfortably handles this; keeps uploads fast on mobile data too
+
+async function handleDocFile(e, docType, nameField, idField){
+  const f = e.target.files[0];
+  if(!f) return;
+  if(f.size > MAX_DOC_SIZE_BYTES){
+    toast(f.name+' is too large (max 8MB). Please choose a smaller file.', 'error');
+    e.target.value = '';
+    return;
+  }
+  regForm[nameField] = f.name;
+  scheduleSave();
+  if(CONFIG.webAppUrl){
+    toast('Uploading '+f.name+'…');
+    try{
+      const base64 = await fileToBase64(f);
+      const result = await remoteUploadDoc(regForm.id, docType, f.name, base64, f.type);
+      if(result && result.fileId){ regForm[idField]=result.fileId; toast(f.name+' uploaded', 'success'); }
+      else toast('Upload failed for '+f.name+' — reselect the file to retry.', 'error');
+    } catch(err){ toast('Upload failed for '+f.name+' — reselect the file to retry.', 'error'); }
+    scheduleSave();
+  }
+}
+function refCode(){
+  const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let s=''; for(let i=0;i<6;i++) s+=chars[Math.floor(Math.random()*chars.length)];
+  return 'VS-'+s;
+}
+function wordCount(t){ return (t.trim().match(/\S+/g)||[]).length; }
+function esc(s){ return (s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+/* Native alert()/confirm() are blocked inside this sandboxed preview, so use in-page equivalents instead. */
+function toast(msg, type='info'){
+  const host = document.getElementById('toastHost');
+  const el = document.createElement('div');
+  el.className = 'toast'+(type==='error'?' error':type==='success'?' success':'');
+  el.textContent = msg;
+  host.appendChild(el);
+  setTimeout(()=>{ el.remove(); }, 3200);
+}
+function confirmDialog(msg){
+  return new Promise(resolve=>{
+    const overlay=document.getElementById('modalHost');
+    document.getElementById('modalMsg').textContent = msg;
+    overlay.style.display='flex';
+    const ok=document.getElementById('modalOk'), cancel=document.getElementById('modalCancel');
+    const cleanup=(result)=>{ overlay.style.display='none'; ok.onclick=null; cancel.onclick=null; resolve(result); };
+    ok.onclick=()=>cleanup(true);
+    cancel.onclick=()=>cleanup(false);
+  });
+}
+
+function showInfo(title, bodyHtml){
+  document.getElementById('infoModalTitle').textContent = title;
+  document.getElementById('infoModalBody').innerHTML = bodyHtml;
+  document.getElementById('infoModalHost').style.display = 'flex';
+}
+function showPrivacyNotice(){
+  showInfo('Privacy notice', `
+    <p>Verbatim Standard collects applicant identity documents, contact details, and assessment submissions for one purpose only: verifying identity and confirming that assessment work belongs to the person who registered, on behalf of the employers who commission this verification.</p>
+    <p>We do not sell applicant data, use it for marketing, or share it beyond what's needed to report a verified result to the commissioning employer. Applicants may request access to, correction of, or deletion of their data by contacting us.</p>
+    <p class="hint">(Placeholder policy text — replace with your finalized, legally reviewed privacy policy before handling real applicant data.)</p>
+  `);
+}
+function showTermsNotice(){
+  showInfo('Terms of service', `
+    <p>By registering, applicants confirm that the identity documents and information they submit are genuine and accurate, and that assessment translations are their own original work, completed without external assistance.</p>
+    <p>Verbatim Standard reserves the right to reject, flag, or void submissions that appear fraudulent, plagiarized, or otherwise in violation of these terms, and to share verification outcomes with the commissioning employer.</p>
+    <p class="hint">(Placeholder terms — replace with finalized terms reviewed by counsel before going live.)</p>
+  `);
+}
+
+/* ===================== Router / state ===================== */
+let view = 'home';
+let regStep = 1;
+let regForm = { id:null, firstName:'', middleName:'', lastName:'', idType:'National ID', idNumber:'', country:'', phone:'', idFrontName:'', idBackName:'', poaName:'', idFrontFileId:null, idBackFileId:null, poaFileId:null, consent:false };
+let regTracks = [];
+let currentApplicant = null; // for apply/lookup
+let activeAssessment = null; // {from,to,passage,startedAt,pasteAttempts}
+let pendingTrack = null; // {from,to} — set while the pre-assessment warning is shown
+let adminUnlocked = false;
+let adminReviewerName = '';
+let adminTab = 'queue'; // 'queue' | 'applicants' | 'scored'
+let adminDetailId = null;
+let reviewDraft = {}; // checklist state while filling out a decision
+
+const REVIEW_CHECKLIST = [
+  {group:'Identity match', items:[
+    {id:'name_match', label:'Name on ID matches the typed name'},
+    {id:'idnum_match', label:'ID number matches the typed number'},
+    {id:'photo_legible', label:'Photo is legible, not cropped or re-screenshotted'},
+  ]},
+  {group:'Document validity', items:[
+    {id:'type_match', label:'ID type matches the selection made at registration'},
+    {id:'not_expired', label:'ID is not visibly expired'},
+    {id:'same_document', label:'Front and back are the same document'},
+  ]},
+  {group:'Proof of residence', items:[
+    {id:'name_match_poa', label:'Name reasonably matches on the proof of residence'},
+    {id:'recent_date', label:'Dated within the last 3 months'},
+    {id:'real_address', label:'Address looks real and checkable'},
+  ]},
+];
+
+/* ===================== Session persistence (survives refresh) ===================== */
+const SESSION_KEY = 'ml_session_v1';
+let _saveTimer = null;
+function scheduleSave(){ clearTimeout(_saveTimer); _saveTimer = setTimeout(saveSession, 500); }
+
+async function saveSession(){
+  const box = document.getElementById('answerBox');
+  const session = {
+    view, regStep, regForm, regTracks,
+    currentApplicantId: currentApplicant ? currentApplicant.id : null,
+    activeAssessment: activeAssessment ? {
+      from: activeAssessment.from, to: activeAssessment.to,
+      passageId: activeAssessment.passage.id,
+      startedAt: activeAssessment.startedAt,
+      pasteAttempts: activeAssessment.pasteAttempts,
+      tabSwitchCount: activeAssessment.tabSwitchCount||0,
+      awaySeconds: activeAssessment.awaySeconds||0,
+      answerText: box ? box.value : (window._draftAnswer || ''),
+    } : null,
+    adminUnlocked, adminReviewerName, adminTab, adminDetailId,
+  };
+  await sSet(SESSION_KEY, session, false);
+}
+
+async function loadSession(){
+  const s = await sGet(SESSION_KEY, false);
+  if(!s) return;
+  view = s.view || 'home';
+  regStep = s.regStep || 1;
+  regForm = Object.assign(regForm, s.regForm || {});
+  regTracks = s.regTracks || [];
+  adminUnlocked = !!s.adminUnlocked;
+  adminReviewerName = s.adminReviewerName || '';
+  adminTab = s.adminTab || 'queue';
+  adminDetailId = s.adminDetailId || null;
+
+  if(s.currentApplicantId){
+    currentApplicant = await sGet('applicants:'+s.currentApplicantId, true);
+    if(!currentApplicant){ view = 'home'; } // record no longer exists — fall back safely
+    else if(view==='register' && regStep==='done'){ view='apply-dash'; } // the one-time ref-code screen doesn't survive refresh; the dashboard does
+  }
+  if(s.activeAssessment && currentApplicant){
+    const {from,to,passageId,startedAt,pasteAttempts,tabSwitchCount,awaySeconds,answerText} = s.activeAssessment;
+    const passage = (PASSAGES[from]||[]).find(p=>p.id===passageId) || pickPassage(from);
+    activeAssessment = {from,to,passage,startedAt,pasteAttempts:pasteAttempts||0,tabSwitchCount:tabSwitchCount||0,awaySeconds:awaySeconds||0};
+    // A page reload while an assessment is in progress is itself a way to leave — log it as a switch.
+    activeAssessment.tabSwitchCount++;
+    window._draftAnswer = answerText || '';
+  } else if(view==='assess' || view==='assess-warn'){
+    view = 'apply-dash'; // can't resume an assessment (or its warning step) without in-memory track context
+  }
+}
+
+const VIEWS = [
+  {id:'home', label:'Home'},
+  {id:'register', label:'Register'},
+  {id:'apply', label:'Assessment'},
+];
+
+function setView(v){ view=v; if(v==='register' && regStep==='done'){regStep=1;} render(); window.scrollTo(0,0); }
+
+// Admin isn't in the nav on purpose — reachable only by appending #admin to the URL.
+function checkAdminHash(){
+  if(location.hash.replace('#','').toLowerCase()==='admin'){ view='admin'; render(); }
+}
+window.addEventListener('hashchange', checkAdminHash);
+document.getElementById('infoModalClose').onclick = ()=>{ document.getElementById('infoModalHost').style.display='none'; };
+
+/* ===================== Assessment integrity monitoring =====================
+   Honest framing: a webpage cannot actually stop someone from switching tabs
+   or opening another app — browsers don't give JS that power. What this does
+   instead is detect and log when it happens, and make clear up front that
+   it's being logged, which is the real deterrent. Treat these numbers as a
+   signal for reviewers, not proof of anything on their own. */
+let _awayStart = null;
+function markAway(){
+  if(!activeAssessment || view!=='assess') return;
+  if(_awayStart) return; // already tracking this absence
+  _awayStart = Date.now();
+  activeAssessment.tabSwitchCount = (activeAssessment.tabSwitchCount||0) + 1;
+  scheduleSave();
+}
+function markBack(){
+  if(!activeAssessment || !_awayStart) return;
+  activeAssessment.awaySeconds = (activeAssessment.awaySeconds||0) + Math.round((Date.now()-_awayStart)/1000);
+  _awayStart = null;
+  scheduleSave();
+  const label = document.getElementById('integrityLabel');
+  if(label) label.textContent = activeAssessment.tabSwitchCount+' tab switch(es) logged';
+  toast('Tab switch detected and logged ('+activeAssessment.tabSwitchCount+' total this assessment).', 'error');
+}
+document.addEventListener('visibilitychange', ()=>{ document.hidden ? markAway() : markBack(); });
+window.addEventListener('blur', markAway);
+window.addEventListener('focus', markBack);
+
+// Deterrent only — keyboard shortcuts can't be reliably blocked, but this stops the common paths.
+window.addEventListener('keydown', (e)=>{
+  if(view!=='assess') return;
+  const k = e.key ? e.key.toLowerCase() : '';
+  const blocked = e.key==='F12'
+    || ((e.ctrlKey||e.metaKey) && e.shiftKey && ['i','j','c'].includes(k))
+    || ((e.ctrlKey||e.metaKey) && (k==='u' || k==='s'));
+  if(blocked){ e.preventDefault(); toast('Developer tools and save shortcuts are disabled during the assessment.', 'error'); }
+});
+
+// Native "leave site?" prompt if they try to close/navigate away mid-assessment.
+window.addEventListener('beforeunload', (e)=>{
+  if(view==='assess' && activeAssessment){ e.preventDefault(); e.returnValue=''; }
+});
+
+function renderNav(){
+  const nav = document.getElementById('nav');
+  nav.innerHTML = VIEWS.map(v=>`<button class="${view===v.id?'active':''}" data-v="${v.id}">${v.label}</button>`).join('');
+  nav.querySelectorAll('button').forEach(b=>b.onclick=()=>{
+    if(location.hash){ try{ history.replaceState(null,'',location.pathname+location.search); }catch(e){} }
+    setView(b.dataset.v);
+  });
+}
+
+/* ===================== Pentagon diagram ===================== */
+function pentagonPositions(){
+  const cx=140, cy=140, r=105;
+  const pos={};
+  LANGS.forEach((l,i)=>{
+    const ang = -Math.PI/2 + i*(2*Math.PI/5);
+    pos[l.code] = { x: cx + r*Math.cos(ang), y: cy + r*Math.sin(ang) };
+  });
+  return pos;
+}
+function renderPentagonSVG(tracks, opts={}){
+  const pos = pentagonPositions();
+  const selA = opts.selA, selB = opts.selB;
+  let arrows = tracks.map(t=>{
+    const a=pos[t.from], b=pos[t.to];
+    const dx=b.x-a.x, dy=b.y-a.y, len=Math.hypot(dx,dy);
+    const ux=dx/len, uy=dy/len;
+    const nx=-uy, ny=ux;
+    const mx=(a.x+b.x)/2 + nx*18, my=(a.y+b.y)/2 + ny*18;
+    const startX=a.x+ux*22, startY=a.y+uy*22;
+    const endX=b.x-ux*26, endY=b.y-uy*26;
+    return `<path d="M ${startX} ${startY} Q ${mx} ${my} ${endX} ${endY}" fill="none" stroke="#a9843c" stroke-width="2" marker-end="url(#arrowhead)" opacity="0.9"/>`;
+  }).join('');
+  let nodes = LANGS.map(l=>{
+    const p=pos[l.code];
+    const isSel = l.code===selA || l.code===selB;
+    return `<g data-lang="${l.code}" class="lang-node" style="cursor:pointer">
+      <circle cx="${p.x}" cy="${p.y}" r="26" fill="${isSel?'#2f6b67':'#fff'}" stroke="#1c2430" stroke-width="1.6"/>
+      <text x="${p.x}" y="${p.y+5}" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" fill="${isSel?'#fff':'#1c2430'}" font-weight="600">${l.code}</text>
+    </g>`;
+  }).join('');
+  return `<svg viewBox="0 0 280 280" width="280" height="280">
+    <defs><marker id="arrowhead" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#a9843c"/></marker></defs>
+    ${arrows}${nodes}
+  </svg>`;
+}
+
+/* ===================== HOME ===================== */
+function renderHome(){
+  return `
+  <section class="hero">
+    <div class="eyebrow">Quality-first translator hiring</div>
+    <h1>We grade translations on quality.</h1>
+    <p class="lead">Verbatim Standard is an independent verification service. We confirm identity, put translation skill to the test across five languages, and hand back a merit-ranked, evidence-backed result. No timers to beat — just work that holds up to scrutiny.</p>
+    <p class="small" style="color:var(--gold);font-weight:600;letter-spacing:.02em;margin-top:2px;">Employers send us their shortlist — we handle identity and skill verification independently.</p>
+    <div style="margin-top:22px;"><button class="btn" onclick="setView('register')">Start your application</button> <button class="btn secondary" onclick="setView('apply')">Continue an application</button></div>
+  </section>
+
+  <div class="divider"></div>
+
+  <div class="grid2">
+    <div class="card">
+      <h3>How the language tracks work</h3>
+      <p class="small">Choose translation tracks between any two of five languages. A track is directional — choosing English → French does not include French → English. You may add as many non-reverse tracks as you like.</p>
+      <div class="pentagon-wrap">${renderPentagonSVG([{from:'EN',to:'FR'},{from:'FR',to:'DE'},{from:'ES',to:'IT'}])}</div>
+      <p class="hint">Example shown: EN→FR, FR→DE, ES→IT. Note FR→EN and IT→ES would be blocked as reverse duplicates of the same pair.</p>
+    </div>
+    <div class="card">
+      <h3>What we assess</h3>
+      <p class="small">Each track presents a short source passage. You translate it once, without external tools or pasted text, under normal working conditions. Reviewers score for accuracy, register, and natural phrasing — not for turnaround time.</p>
+      <ul class="small">
+        <li>One passage per track, ~150–180 words</li>
+        <li>Pasting into the answer field is disabled and logged</li>
+        <li>Results are ranked by merit score for the employers you're applying through, not submission order</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Identity verification — please read before registering</h3>
+    <p class="small">To keep the assessment fair and prevent fraudulent submissions, every applicant is verified before taking an assessment. You will be asked to provide:</p>
+    <div class="grid2">
+      <ul class="small">
+        <li>First name, middle name and surname/last name, exactly as on your ID</li>
+        <li>A government ID number (National ID, Passport, or Driver's Licence)</li>
+        <li>Front and back images of that ID document</li>
+      </ul>
+      <ul class="small">
+        <li>A contactable phone number</li>
+        <li>Proof of residence (e.g. a recent utility bill)</li>
+        <li>Your country/region, to apply the correct regional ID requirements</li>
+      </ul>
+    </div>
+    <div class="notice">This information is collected and recorded <strong>solely to verify your identity and to cross-check it against your assessment submission</strong> — for example, to confirm the same person who registered is the one who completed the translation. It is not used for any other purpose, and this notice is the same one shown to every applicant before they submit anything.</div>
+  </div>
+  `;
+}
+
+/* ===================== REGISTER ===================== */
+function stepBar(){
+  const labels=['Identity & KYC','Language tracks','Review & submit'];
+  return `<div class="steps">${labels.map((l,i)=>{
+    const n=i+1; const cls = n<regStep?'step done':(n===regStep?'step active':'step');
+    return `<div class="${cls}">${n}. ${l}</div>`;
+  }).join('')}</div>`;
+}
+
+function renderRegisterStep1(){
+  const f=regForm;
+  return `
+  <h2>Register — Identity &amp; KYC</h2>
+  ${stepBar()}
+  <div class="notice teal">Recorded for identity verification only. Fields marked <span class="req">*</span> are required.</div>
+  <div class="grid2">
+    <div><label>First name <span class="req">*</span></label><input id="f_first" type="text" maxlength="80" value="${esc(f.firstName)}"></div>
+    <div><label>Middle name</label><input id="f_mid" type="text" maxlength="80" value="${esc(f.middleName)}"></div>
+  </div>
+  <div class="grid2">
+    <div><label>Surname / last name <span class="req">*</span></label><input id="f_last" type="text" maxlength="80" value="${esc(f.lastName)}"></div>
+    <div><label>Country / region <span class="req">*</span></label>
+      <select id="f_country">
+        <option value="" ${!f.country?'selected':''} disabled>Select your country/region…</option>
+        ${COUNTRIES.map(c=>`<option value="${esc(c.name)}" ${f.country===c.name?'selected':''}>${esc(c.name)} (${c.code})</option>`).join('')}
+      </select>
+      <div class="hint">Determines the standard regional ID requirements and the phone number format below.</div>
+    </div>
+  </div>
+  <div class="grid2">
+    <div><label>ID type <span class="req">*</span></label>
+      <select id="f_idtype">
+        ${['National ID','Passport',"Driver's Licence"].map(c=>`<option ${f.idType===c?'selected':''}>${c}</option>`).join('')}
+      </select>
+    </div>
+    <div><label>ID number <span class="req">*</span></label><input id="f_idnum" type="text" maxlength="40" value="${esc(f.idNumber)}"></div>
+  </div>
+  <div class="grid2">
+    <div>
+      <label>ID document — front <span class="req">*</span></label>
+      <div class="filefield"><input id="f_idfront" type="file" accept="image/*,.pdf"><div class="hint">${f.idFrontName?('Selected: '+esc(f.idFrontName)):'Clear photo or scan, front side'}</div></div>
+    </div>
+    <div>
+      <label>ID document — back <span class="req">*</span></label>
+      <div class="filefield"><input id="f_idback" type="file" accept="image/*,.pdf"><div class="hint">${f.idBackName?('Selected: '+esc(f.idBackName)):'Clear photo or scan, back side'}</div></div>
+    </div>
+  </div>
+  <div class="grid2">
+    <div><label>Phone number <span class="req">*</span></label><input id="f_phone" type="tel" maxlength="20" placeholder="${f.country? dialCodeFor(f.country)+' XXX XXX XXX' : 'Select a country first'}" value="${esc(f.phone)}"><div class="hint" id="phoneHint">${f.country? `Format follows ${esc(f.country)}: expected to start with ${dialCodeFor(f.country)}.` : 'Choose your country/region above to see the expected format.'}</div></div>
+    <div>
+      <label>Proof of residence <span class="req">*</span></label>
+      <div class="filefield"><input id="f_poa" type="file" accept="image/*,.pdf"><div class="hint">${f.poaName?('Selected: '+esc(f.poaName)):'Recent utility bill or equivalent'}</div></div>
+    </div>
+  </div>
+  <div style="margin-top:22px;display:flex;justify-content:flex-end;"><button class="btn" id="toStep2">Continue to language tracks →</button></div>
+  `;
+}
+
+function renderRegisterStep2(){
+  const pairKey = (a,b)=>a+'>'+b;
+  const reverseExists = (a,b)=> regTracks.some(t=>t.from===b && t.to===a);
+  const already = (a,b)=> regTracks.some(t=>t.from===a && t.to===b);
+  return `
+  <h2>Register — Language tracks</h2>
+  ${stepBar()}
+  <p class="small">Tap a source language, then a target language, to add a directional track. Reverse pairs of a track you've already chosen are blocked automatically.</p>
+  <div class="pentagon-wrap">${renderPentagonSVG(regTracks, {selA: window._pendingA})}</div>
+  <div id="pendingMsg" class="hint" style="text-align:center;">${window._pendingA? ('Source selected: '+langName(window._pendingA)+' — now choose a target language.') : 'Choose a source language to begin.'}</div>
+  <div class="divider"></div>
+  <div>
+    <label>Selected tracks</label>
+    <div>${regTracks.length? regTracks.map((t,i)=>`<span class="pill">${langName(t.from)} → ${langName(t.to)} <button data-i="${i}" class="rmTrack">✕</button></span>`).join('') : '<span class="small">No tracks selected yet.</span>'}</div>
+  </div>
+  <div style="margin-top:26px;display:flex;justify-content:space-between;">
+    <button class="btn secondary" id="toStep1b">← Back</button>
+    <button class="btn" id="toStep3" ${regTracks.length? '' : 'disabled'}>Continue to review →</button>
+  </div>
+  `;
+}
+
+function renderRegisterStep3(){
+  const f=regForm;
+  return `
+  <h2>Register — Review &amp; submit</h2>
+  ${stepBar()}
+  <div class="card">
+    <h3>Identity summary</h3>
+    <table>
+      <tr><th>Name</th><td>${esc([f.firstName,f.middleName,f.lastName].filter(Boolean).join(' '))}</td></tr>
+      <tr><th>Country/region</th><td>${esc(f.country)}</td></tr>
+      <tr><th>ID</th><td>${esc(f.idType)} — ${esc(f.idNumber)}</td></tr>
+      <tr><th>Documents</th><td>${f.idFrontName?'ID front ✓ ':''}${f.idBackName?'ID back ✓ ':''}${f.poaName?'Proof of residence ✓':''}</td></tr>
+      <tr><th>Phone</th><td>${esc(f.phone)}</td></tr>
+      <tr><th>Tracks</th><td>${regTracks.map(t=>langName(t.from)+' → '+langName(t.to)).join(', ')}</td></tr>
+    </table>
+  </div>
+  <div class="notice">By submitting, I confirm the details above are accurate and understand they are recorded for identity verification and fraud-prevention purposes only, as described on the Home page.</div>
+  <label style="display:flex;align-items:center;gap:8px;text-transform:none;font-weight:400;color:var(--ink);font-size:14px;">
+    <input type="checkbox" id="consentBox" ${regForm.consent?'checked':''} style="width:auto;"> I consent to the above and confirm the documents provided are genuine and mine.
+  </label>
+  <div style="margin-top:22px;display:flex;justify-content:space-between;">
+    <button class="btn secondary" id="toStep2b">← Back</button>
+    <button class="btn gold" id="submitReg">Submit registration</button>
+  </div>
+  `;
+}
+
+function renderRegisterDone(id){
+  return `
+  <h2>You're registered</h2>
+  <p class="small">Save this reference code — you'll need it, together with your phone number, to continue to the assessment.</p>
+  <div class="ref-box"><div class="small" style="color:#cfd3c8;">Your reference code</div><div class="code mono">${id}</div></div>
+  <div style="text-align:center;"><button class="btn" onclick="setView('apply')">Go to assessment →</button></div>
+  `;
+}
+
+function wireRegisterEvents(){
+  if(regStep===1){
+    const bindText = (id, field) => {
+      const el = document.getElementById(id);
+      el.addEventListener('input', ()=>{ regForm[field]=el.value; scheduleSave(); });
+    };
+    bindText('f_first','firstName'); bindText('f_mid','middleName'); bindText('f_last','lastName');
+    bindText('f_idnum','idNumber'); bindText('f_phone','phone');
+
+    const countrySel = document.getElementById('f_country');
+    const phoneInput = document.getElementById('f_phone');
+    const phoneHint = document.getElementById('phoneHint');
+    countrySel.addEventListener('change', ()=>{
+      regForm.country = countrySel.value;
+      const code = dialCodeFor(regForm.country);
+      phoneInput.placeholder = `${code} XXX XXX XXX`;
+      phoneHint.textContent = `Format follows ${regForm.country}: expected to start with ${code}.`;
+      // If the phone field is empty, or still holds a different country's dial code, prefill the right one.
+      const trimmed = phoneInput.value.trim();
+      const looksLikeOtherCode = trimmed && !trimmed.startsWith(code) && COUNTRIES.some(c=>trimmed.startsWith(c.code) && c.code!=='+');
+      if(!trimmed || looksLikeOtherCode){ phoneInput.value = code+' '; regForm.phone = phoneInput.value; }
+      scheduleSave();
+    });
+    document.getElementById('f_idtype').addEventListener('change', (e)=>{ regForm.idType=e.target.value; scheduleSave(); });
+    document.getElementById('f_idfront').addEventListener('change', (e)=>handleDocFile(e, 'id_front', 'idFrontName', 'idFrontFileId'));
+    document.getElementById('f_idback').addEventListener('change', (e)=>handleDocFile(e, 'id_back', 'idBackName', 'idBackFileId'));
+    document.getElementById('f_poa').addEventListener('change', (e)=>handleDocFile(e, 'proof_of_residence', 'poaName', 'poaFileId'));
+
+    document.getElementById('toStep2').onclick = async ()=>{
+      regForm.firstName=document.getElementById('f_first').value.trim();
+      regForm.middleName=document.getElementById('f_mid').value.trim();
+      regForm.lastName=document.getElementById('f_last').value.trim();
+      regForm.country=document.getElementById('f_country').value;
+      regForm.idType=document.getElementById('f_idtype').value;
+      regForm.idNumber=document.getElementById('f_idnum').value.trim();
+      regForm.phone=document.getElementById('f_phone').value.trim();
+      const idf=document.getElementById('f_idfront').files[0];
+      const idb=document.getElementById('f_idback').files[0];
+      const poa=document.getElementById('f_poa').files[0];
+      if(idf) regForm.idFrontName=idf.name;
+      if(idb) regForm.idBackName=idb.name;
+      if(poa) regForm.poaName=poa.name;
+      if(!regForm.firstName||!regForm.lastName||!regForm.idNumber||!regForm.phone||!regForm.idFrontName||!regForm.idBackName||!regForm.poaName){
+        toast('Please complete all required fields, including the three documents, before continuing.', 'error'); return;
+      }
+      regStep=2; render();
+    };
+  }
+  if(regStep===2){
+    document.querySelectorAll('.lang-node').forEach(n=>{
+      n.onclick=()=>{
+        const code=n.dataset.lang;
+        if(!window._pendingA){ window._pendingA=code; render(); return; }
+        if(window._pendingA===code){ window._pendingA=null; render(); return; }
+        const a=window._pendingA, b=code;
+        const reverseExists = regTracks.some(t=>t.from===b && t.to===a);
+        const dup = regTracks.some(t=>t.from===a && t.to===b);
+        if(reverseExists){ toast(`${langName(b)} → ${langName(a)} is already selected, so ${langName(a)} → ${langName(b)} (its reverse) can't be added.`, 'error'); }
+        else if(dup){ toast('That track is already selected.', 'error'); }
+        else{ regTracks.push({from:a,to:b}); }
+        window._pendingA=null; render();
+      };
+    });
+    document.querySelectorAll('.rmTrack').forEach(b=>b.onclick=()=>{ regTracks.splice(+b.dataset.i,1); render(); });
+    document.getElementById('toStep1b').onclick=()=>{ regStep=1; render(); };
+    const s3btn=document.getElementById('toStep3');
+    if(s3btn) s3btn.onclick=()=>{ if(regTracks.length){ regStep=3; render(); } };
+  }
+  if(regStep===3){
+    document.getElementById('toStep2b').onclick=()=>{ regStep=2; render(); };
+    document.getElementById('consentBox').onchange=(e)=>{ regForm.consent=e.target.checked; };
+    document.getElementById('submitReg').onclick=async ()=>{
+      if(!regForm.consent){ toast('Please confirm the consent checkbox to submit.', 'error'); return; }
+      const id = regForm.id || refCode();
+      const record = {
+        id, ...regForm,
+        tracks: regTracks,
+        createdAt: new Date().toISOString(),
+        verificationStatus: 'submitted',
+        verificationUpdatedAt: null,
+        claimedBy: null,
+      };
+      await sSet('applicants:'+id, record, true);
+      currentApplicant = record;
+      regForm = { id:null, firstName:'', middleName:'', lastName:'', idType:'National ID', idNumber:'', country:'', phone:'', idFrontName:'', idBackName:'', poaName:'', idFrontFileId:null, idBackFileId:null, poaFileId:null, consent:false };
+      regTracks = [];
+      view='register'; regStep='done'; window._lastRegId=id;
+      render();
+    };
+  }
+}
+
+function renderRegister(){
+  if(regStep==='done') return renderRegisterDone(window._lastRegId);
+  if(regStep===1) return renderRegisterStep1();
+  if(regStep===2) return renderRegisterStep2();
+  if(regStep===3) return renderRegisterStep3();
+}
+
+/* ===================== APPLY / ASSESSMENT ===================== */
+function renderApplyLookup(){
+  return `
+  <h2>Continue your application</h2>
+  <p class="small">Enter your reference code and the phone number you registered with.</p>
+  <div class="grid2">
+    <div><label>Reference code</label><input id="lk_ref" type="text" placeholder="VS-XXXXXX"></div>
+    <div><label>Phone number</label><input id="lk_phone" type="tel"></div>
+  </div>
+  <div style="margin-top:16px;"><button class="btn" id="lookupBtn">Continue →</button></div>
+  <div id="lookupErr"></div>
+  `;
+}
+
+async function doLookup(){
+  const ref=document.getElementById('lk_ref').value.trim().toUpperCase();
+  const phone=document.getElementById('lk_phone').value.trim();
+  const rec = await sGet('applicants:'+ref, true);
+  const errEl=document.getElementById('lookupErr');
+  if(!rec || rec.phone.replace(/\s+/g,'') !== phone.replace(/\s+/g,'')){
+    errEl.innerHTML = '<div class="notice brick">No matching application found. Check your reference code and phone number.</div>';
+    return;
+  }
+  currentApplicant = rec;
+  view='apply-dash';
+  render();
+}
+
+async function renderApplyDash(){
+  const rec = currentApplicant;
+  const subs = {};
+  for(const t of rec.tracks){
+    const key = 'assessment:'+rec.id+':'+t.from+'-'+t.to;
+    subs[t.from+'-'+t.to] = await sGet(key, true);
+  }
+  window._applyTrackSubs = subs;
+  const rows = rec.tracks.map(t=>{
+    const s = subs[t.from+'-'+t.to];
+    const status = s? (s.score!=null?'scored':'submitted') : 'pending';
+    const label = s? (s.score!=null?`Scored (${s.score}/10)`:'Submitted — awaiting review') : 'Not started';
+    return `<tr>
+      <td>${langName(t.from)} → ${langName(t.to)}</td>
+      <td><span class="badge ${status}">${label}</span></td>
+      <td>${s? '' : `<button class="btn secondary startAssess" data-from="${t.from}" data-to="${t.to}">Take assessment</button>`}</td>
+    </tr>`;
+  }).join('');
+  return `
+  <h2>Welcome back, ${esc(rec.firstName)}</h2>
+  <p class="small">Reference ${rec.id}. Complete one assessment per track below. Each track can only be attempted once.</p>
+  <table><tr><th>Track</th><th>Status</th><th></th></tr>${rows}</table>
+  `;
+}
+
+function pickPassage(fromLang){
+  const list = PASSAGES[fromLang] || PASSAGES.EN;
+  return list[Math.floor(Math.random()*list.length)];
+}
+
+function renderAssessWarn(){
+  const t = pendingTrack;
+  return `
+  <h2>Before you begin — ${langName(t.from)} → ${langName(t.to)}</h2>
+  <div class="notice brick">
+    <strong>This assessment is monitored, and reviewers see the results:</strong>
+    <ul style="margin:8px 0 0;padding-left:20px;">
+      <li>Pasting text into your answer is disabled — attempts are counted and shown to reviewers.</li>
+      <li>Switching tabs, switching apps, or leaving this page is detected and timed — the count and time away are shown to reviewers.</li>
+      <li>The source text can't be copied, and right-click is disabled on it.</li>
+    </ul>
+  </div>
+  <p class="small">None of this is meant to catch you out — it's there so reviewers can trust that the translation in front of them is genuinely yours, done on your own knowledge. Once you start, you won't be able to pause the clock, so make sure you're ready before continuing.</p>
+  <div style="margin-top:20px;display:flex;justify-content:space-between;">
+    <button class="btn secondary" id="cancelAssess">← Not yet, take me back</button>
+    <button class="btn gold" id="beginAssess">I understand — begin assessment</button>
+  </div>
+  `;
+}
+
+function renderAssessment(){
+  const a = activeAssessment;
+  const wc = wordCount(document.getElementById && document.getElementById('answerBox') ? document.getElementById('answerBox').value : '');
+  return `
+  <h2>Assessment — ${langName(a.from)} → ${langName(a.to)}</h2>
+  <div class="notice teal">Translate the passage below into ${langName(a.to)}. As explained before you started: pasting and tab switches are logged and visible to reviewers. Take the time you need to get it right — this is scored on quality, not speed.</div>
+  <label>Source text (${langName(a.from)})</label>
+  <div class="passage-box" oncopy="return false" oncontextmenu="return false">${esc(a.passage.text)}</div>
+  <label>Your translation (${langName(a.to)})</label>
+  <textarea id="answerBox" class="answer" maxlength="6000" placeholder="Type your translation here…"></textarea>
+  <div class="paste-warn" id="pasteWarn">Pasting is disabled for this assessment. This attempt has been logged.</div>
+  <div class="meta-row"><span id="wcLabel">0 words</span><span>Started ${new Date(a.startedAt).toLocaleTimeString()}</span><span id="integrityLabel">${a.tabSwitchCount? a.tabSwitchCount+' tab switch(es) logged' : 'No tab switches logged'}</span></div>
+  <div style="margin-top:20px;display:flex;justify-content:space-between;">
+    <button class="btn secondary" onclick="activeAssessment=null; view='apply-dash'; render();">← Back without submitting</button>
+    <button class="btn gold" id="submitAssess">Submit translation</button>
+  </div>
+  `;
+}
+
+function wireAssessmentEvents(){
+  const box = document.getElementById('answerBox');
+  const wcLabel = document.getElementById('wcLabel');
+  const warn = document.getElementById('pasteWarn');
+  box.addEventListener('input', ()=>{ wcLabel.textContent = wordCount(box.value)+' words'; scheduleSave(); });
+  box.addEventListener('paste', (e)=>{ e.preventDefault(); activeAssessment.pasteAttempts++; warn.style.display='block'; setTimeout(()=>warn.style.display='none', 2500); });
+  box.addEventListener('drop', (e)=>{ e.preventDefault(); activeAssessment.pasteAttempts++; warn.style.display='block'; setTimeout(()=>warn.style.display='none', 2500); });
+  document.getElementById('submitAssess').onclick = async ()=>{
+    const text = box.value.trim();
+    if(wordCount(text) < 20){ toast('Your translation looks very short — please review before submitting.', 'error'); return; }
+    const proceed = await confirmDialog('Submit this translation? You will not be able to edit it afterward.');
+    if(!proceed) return;
+    const a = activeAssessment;
+    const key = 'assessment:'+currentApplicant.id+':'+a.from+'-'+a.to;
+    const record = {
+      applicantId: currentApplicant.id,
+      applicantName: [currentApplicant.firstName,currentApplicant.lastName].join(' '),
+      from:a.from, to:a.to,
+      passageId:a.passage.id, passageTitle:a.passage.title, sourceText:a.passage.text,
+      translation:text,
+      wordCount: wordCount(text),
+      timeSpentSec: Math.round((Date.now()-a.startedAt)/1000),
+      pasteAttempts: a.pasteAttempts,
+      tabSwitchCount: a.tabSwitchCount||0,
+      awaySeconds: a.awaySeconds||0,
+      submittedAt: new Date().toISOString(),
+      score: null, notes: ''
+    };
+    await sSet(key, record, true);
+    activeAssessment=null; view='apply-dash'; render();
+  };
+}
+
+/* ===================== ADMIN ===================== */
+function renderAdminGate(){
+  return `
+  <h2>Admin review</h2>
+  <p class="small">Enter your reviewer name and the admin passphrase.</p>
+  <div class="notice brick">Demo-only gate: this is a client-side check for prototype purposes, not real authentication. Production use requires a proper backend with access control and real reviewer accounts.</div>
+  <label>Reviewer name</label>
+  <input id="admName" type="text" placeholder="e.g. Kamz" style="max-width:280px;">
+  <label>Passphrase</label>
+  <input id="admPass" type="password" placeholder="Passphrase" style="max-width:280px;">
+  <div style="margin-top:12px;"><button class="btn" id="admGo">Enter</button></div>
+  `;
+}
+
+async function loadApplicants(){
+  const appKeys = await sList('applicants:', true);
+  const applicants = [];
+  for(const k of appKeys){ const r = await sGet(k, true); if(r) applicants.push(r); }
+  return applicants;
+}
+async function loadAssessments(){
+  const asKeys = await sList('assessment:', true);
+  const assessments = [];
+  for(const k of asKeys){ const r = await sGet(k, true); if(r) assessments.push({key:k, ...r}); }
+  return assessments;
+}
+async function bestScore(applicantId, assessments){
+  const mine = assessments.filter(a=>a.applicantId===applicantId && a.score!=null);
+  if(!mine.length) return null;
+  return Math.max(...mine.map(a=>a.score));
+}
+async function loadReviews(applicantId){
+  const keys = await sList('review:'+applicantId+':', true);
+  const reviews = [];
+  for(const k of keys){ const r = await sGet(k, true); if(r) reviews.push(r); }
+  reviews.sort((a,b)=> new Date(b.at) - new Date(a.at));
+  return reviews;
+}
+
+function statusLabel(s){
+  return {submitted:'Not yet reviewed', under_review:'Under review', verified:'Verified',
+    needs_resubmission:'Needs resubmission', rejected:'Rejected'}[s] || s;
+}
+
+async function renderAdminQueue(){
+  const applicants = (await loadApplicants()).filter(a=> (a.verificationStatus||'submitted')!=='verified' && a.verificationStatus!=='rejected');
+  const assessments = await loadAssessments();
+  const withScores = await Promise.all(applicants.map(async a=>({a, score: await bestScore(a.id, assessments)})));
+  withScores.sort((x,y)=> (y.score??-1) - (x.score??-1));
+  const rows = withScores.map(({a,score})=>{
+    const status = a.verificationStatus||'submitted';
+    const canClaim = status==='submitted';
+    const isMine = status==='under_review' && a.claimedBy===adminReviewerName;
+    const lockedByOther = status==='under_review' && a.claimedBy!==adminReviewerName;
+    return `<tr>
+      <td class="mono">${esc(a.id)}</td>
+      <td>${esc([a.firstName,a.lastName].filter(Boolean).join(' '))}</td>
+      <td>${score!=null? `<strong>${score}/10</strong>` : '<span class="small">Not scored yet</span>'}</td>
+      <td><span class="badge ${status}">${statusLabel(status)}</span>${lockedByOther?` <span class="small">(claimed by ${esc(a.claimedBy)})</span>`:''}</td>
+      <td>
+        ${canClaim? `<button class="btn secondary claimBtn" data-id="${a.id}">Claim &amp; review</button>` : ''}
+        ${isMine? `<button class="btn secondary openReviewBtn" data-id="${a.id}">Continue review</button>` : ''}
+      </td>
+    </tr>`;
+  }).join('');
+  return `
+  <p class="small">Sorted by best assessment score, so reviewer time goes to applicants worth verifying first. Only ${'"submitted"'} and ${'"under review"'} applications appear here.</p>
+  <table><tr><th>Ref</th><th>Name</th><th>Best score</th><th>Status</th><th></th></tr>${rows||'<tr><td colspan=5 class="small">Queue is empty.</td></tr>'}</table>
+  `;
+}
+
+async function renderAdminApplicants(){
+  const applicants = await loadApplicants();
+  const rows = applicants.map(a=>{
+    const status = a.verificationStatus||'submitted';
+    return `<tr>
+      <td class="mono">${esc(a.id)}</td>
+      <td>${esc([a.firstName,a.middleName,a.lastName].filter(Boolean).join(' '))}</td>
+      <td>${esc(a.country)}</td>
+      <td>${esc(a.idType)} · ${esc((a.idNumber||'').replace(/.(?=.{3})/g,'•'))}</td>
+      <td>${esc(a.phone)}</td>
+      <td>${a.tracks.map(t=>t.from+'→'+t.to).join(', ')}</td>
+      <td><span class="badge ${status}">${statusLabel(status)}</span></td>
+      <td><button class="btn secondary openReviewBtn" data-id="${a.id}">Open</button></td>
+    </tr>`;
+  }).join('');
+  return `<div style="overflow-x:auto;"><table><tr><th>Ref</th><th>Name</th><th>Region</th><th>ID</th><th>Phone</th><th>Tracks</th><th>Status</th><th></th></tr>${rows||'<tr><td colspan=8 class="small">No applicants yet.</td></tr>'}</table></div>`;
+}
+
+async function renderAdminScored(){
+  const assessments = (await loadAssessments()).sort((a,b)=> (b.score??-1) - (a.score??-1));
+  const rows = assessments.map(s=>`
+    <tr>
+      <td>${esc(s.applicantName)}<br><span class="small mono">${esc(s.applicantId)}</span></td>
+      <td>${langName(s.from)} → ${langName(s.to)}</td>
+      <td>${s.wordCount}w · ${Math.round(s.timeSpentSec/60)}min${s.pasteAttempts?` · <span style="color:var(--brick)">${s.pasteAttempts} paste attempt(s)</span>`:''}${s.tabSwitchCount?` · <span style="color:var(--brick)">${s.tabSwitchCount} tab switch(es), ${Math.round((s.awaySeconds||0)/60)}min away</span>`:''}</td>
+      <td style="max-width:280px;"><details><summary class="small">View translation</summary><div class="small" style="white-space:pre-wrap;margin-top:6px;">${esc(s.translation)}</div></details></td>
+      <td><input type="text" class="mono scoreInput" data-key="${s.key}" value="${s.score??''}" placeholder="0-10" style="width:60px;display:inline-block;padding:5px;"></td>
+    </tr>`).join('');
+  return `<p class="small">Merit score (0–10) drives the ranking passed back to the employer.</p>
+  <div style="overflow-x:auto;"><table><tr><th>Applicant</th><th>Track</th><th>Stats</th><th>Translation</th><th>Score</th></tr>${rows||'<tr><td colspan=5 class="small">No submissions yet.</td></tr>'}</table></div>`;
+}
+
+async function renderAdminDetail(id){
+  const a = await sGet('applicants:'+id, true);
+  if(!a) return '<p class="small">Applicant not found.</p><button class="btn secondary" onclick="adminDetailId=null;render();">← Back</button>';
+  const reviews = await loadReviews(id);
+  const status = a.verificationStatus||'submitted';
+  const canDecide = status==='under_review' && a.claimedBy===adminReviewerName;
+
+  const checklistHtml = REVIEW_CHECKLIST.map(g=>`
+    <div class="checklist-group">
+      <h4>${g.group}</h4>
+      ${g.items.map(it=>`<label class="check-row"><input type="checkbox" class="chkItem" data-id="${it.id}" ${reviewDraft[it.id]?'checked':''}> ${it.label}</label>`).join('')}
+    </div>`).join('');
+
+  const historyHtml = reviews.length? `<div class="review-history">${reviews.map(r=>`
+    <div class="review-entry">
+      <span class="who">${esc(r.reviewer)}</span> — <span class="badge ${r.decision}">${statusLabel(r.decision==='claimed'?'under_review':r.decision)}</span>
+      <div class="small">${new Date(r.at).toLocaleString()}${r.reason? ' — '+esc(r.reason):''}</div>
+    </div>`).join('')}</div>` : '<p class="small">No review history yet.</p>';
+
+  return `
+  <button class="linklike" onclick="adminDetailId=null; reviewDraft={}; render();">← Back to list</button>
+  <h2 style="margin-top:10px;">${esc([a.firstName,a.middleName,a.lastName].filter(Boolean).join(' '))} <span class="small mono">${esc(a.id)}</span></h2>
+  <span class="badge ${status}">${statusLabel(status)}</span>
+
+  <div class="grid2" style="margin-top:18px;">
+    <div class="card">
+      <h3>Identity</h3>
+      <table>
+        <tr><th>Country/region</th><td>${esc(a.country)}</td></tr>
+        <tr><th>ID</th><td>${esc(a.idType)} — ${esc(a.idNumber)}</td></tr>
+        <tr><th>Documents on file</th><td>${esc(a.idFrontName)}<br>${esc(a.idBackName)}<br>${esc(a.poaName)}</td></tr>
+        <tr><th>Phone</th><td>${esc(a.phone)}</td></tr>
+        <tr><th>Tracks</th><td>${a.tracks.map(t=>langName(t.from)+' → '+langName(t.to)).join(', ')}</td></tr>
+        <tr><th>Registered</th><td>${new Date(a.createdAt).toLocaleString()}</td></tr>
+      </table>
+      <div class="hint">Document filenames only — image content isn't stored in this prototype. See the KYC backend plan for secure document storage.</div>
+    </div>
+    <div class="card">
+      <h3>Review decision</h3>
+      ${!canDecide? `<p class="small">${status==='submitted'? 'Claim this application from the queue before recording a decision.' : (status==='under_review'? `Currently claimed by ${esc(a.claimedBy)}.` : 'A decision has already been recorded for this application.')}</p>` : `
+        ${checklistHtml}
+        <label>Reason / notes ${'<span class="req">*</span> for anything other than Verified'}</label>
+        <textarea id="reviewReason" rows="3" maxlength="1000" placeholder="Required if flagging for resubmission or rejecting"></textarea>
+        <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn gold" id="decideVerified">Verified</button>
+          <button class="btn secondary" id="decideResubmit">Needs resubmission</button>
+          <button class="btn secondary" id="decideRejected" style="border-color:var(--brick);color:var(--brick);">Rejected</button>
+        </div>
+      `}
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Review history</h3>
+    ${historyHtml}
+  </div>
+  `;
+}
+
+function wireAdminScoreEvents(){
+  document.querySelectorAll('.scoreInput').forEach(inp=>{
+    inp.addEventListener('change', async ()=>{
+      const key=inp.dataset.key;
+      const rec = await sGet(key, true);
+      if(!rec) return;
+      const v = inp.value.trim();
+      rec.score = v===''? null : Math.max(0,Math.min(10, Number(v)));
+      await sSet(key, rec, true);
+      render();
+    });
+  });
+}
+
+async function claimApplication(id){
+  const a = await sGet('applicants:'+id, true);
+  if(!a || (a.verificationStatus||'submitted')!=='submitted'){ render(); return; }
+  a.verificationStatus='under_review'; a.claimedBy=adminReviewerName; a.verificationUpdatedAt=new Date().toISOString();
+  await sSet('applicants:'+id, a, true);
+  await sSet('review:'+id+':'+Date.now(), {reviewer:adminReviewerName, decision:'claimed', reason:'', at:new Date().toISOString()}, true);
+  adminDetailId = id; reviewDraft = {};
+  render();
+}
+
+async function submitDecision(id, decision){
+  const reasonEl = document.getElementById('reviewReason');
+  const reason = reasonEl? reasonEl.value.trim() : '';
+  if(decision!=='verified' && !reason){ toast('Please add a reason before recording this decision.', 'error'); return; }
+  const checklist = {};
+  document.querySelectorAll('.chkItem').forEach(c=>{ checklist[c.dataset.id]=c.checked; });
+  const a = await sGet('applicants:'+id, true);
+  if(!a) return;
+  a.verificationStatus = decision;
+  a.verificationUpdatedAt = new Date().toISOString();
+  a.claimedBy = null;
+  await sSet('applicants:'+id, a, true);
+  await sSet('review:'+id+':'+Date.now(), {reviewer:adminReviewerName, decision, reason, checklist, at:new Date().toISOString()}, true);
+  reviewDraft = {};
+  render();
+}
+
+function wireAdminEvents(){
+  document.querySelectorAll('.claimBtn').forEach(b=> b.onclick=()=> claimApplication(b.dataset.id));
+  document.querySelectorAll('.openReviewBtn').forEach(b=> b.onclick=()=>{ adminDetailId=b.dataset.id; reviewDraft={}; render(); });
+  document.querySelectorAll('.chkItem').forEach(c=> c.onchange=()=>{ reviewDraft[c.dataset.id]=c.checked; });
+  const vBtn=document.getElementById('decideVerified'); if(vBtn) vBtn.onclick=()=>submitDecision(adminDetailId,'verified');
+  const rBtn=document.getElementById('decideResubmit'); if(rBtn) rBtn.onclick=()=>submitDecision(adminDetailId,'needs_resubmission');
+  const xBtn=document.getElementById('decideRejected'); if(xBtn) xBtn.onclick=()=>submitDecision(adminDetailId,'rejected');
+  wireAdminScoreEvents();
+}
+
+/* ===================== Render dispatcher ===================== */
+async function render(){
+  renderNav();
+  const app = document.getElementById('app');
+  if(view==='home'){ app.innerHTML = renderHome(); }
+  else if(view==='register'){
+    if(regStep!=='done' && !regForm.id) regForm.id = refCode();
+    app.innerHTML = renderRegister(); wireRegisterEvents();
+  }
+  else if(view==='apply'){
+    app.innerHTML = renderApplyLookup();
+    document.getElementById('lookupBtn').onclick = doLookup;
+  }
+  else if(view==='apply-dash'){
+    app.innerHTML = '<p class="small">Loading…</p>';
+    app.innerHTML = await renderApplyDash();
+    document.querySelectorAll('.startAssess').forEach(b=>{
+      b.onclick=()=>{
+        pendingTrack = { from:b.dataset.from, to:b.dataset.to };
+        view='assess-warn'; render();
+      };
+    });
+  }
+  else if(view==='assess-warn'){
+    app.innerHTML = renderAssessWarn();
+    document.getElementById('beginAssess').onclick = ()=>{
+      const {from,to} = pendingTrack;
+      activeAssessment = { from, to, passage: pickPassage(from), startedAt: Date.now(), pasteAttempts:0, tabSwitchCount:0, awaySeconds:0 };
+      pendingTrack = null;
+      view='assess'; render();
+    };
+    document.getElementById('cancelAssess').onclick = ()=>{ pendingTrack=null; view='apply-dash'; render(); };
+  }
+  else if(view==='assess'){
+    app.innerHTML = renderAssessment();
+    wireAssessmentEvents();
+    if(window._draftAnswer){
+      const box = document.getElementById('answerBox');
+      if(box){ box.value = window._draftAnswer; box.dispatchEvent(new Event('input')); }
+      window._draftAnswer = null;
+    }
+  }
+  else if(view==='admin'){
+    if(!adminUnlocked){
+      app.innerHTML = renderAdminGate();
+      document.getElementById('admGo').onclick=()=>{
+        const name = document.getElementById('admName').value.trim();
+        if(!name){ toast('Enter your reviewer name.', 'error'); return; }
+        if(document.getElementById('admPass').value === CONFIG.adminPassphrase){ adminUnlocked=true; adminReviewerName=name; render(); }
+        else toast('Incorrect passphrase.', 'error');
+      };
+    } else if(adminDetailId){
+      app.innerHTML = '<p class="small">Loading…</p>';
+      app.innerHTML = await renderAdminDetail(adminDetailId);
+      wireAdminEvents();
+    } else {
+      app.innerHTML = `<h2>Admin review</h2><p class="small">Signed in as ${esc(adminReviewerName)}.</p>
+        <div class="tabbar">
+          <button class="${adminTab==='queue'?'active':''}" data-t="queue">Review queue</button>
+          <button class="${adminTab==='applicants'?'active':''}" data-t="applicants">All applicants</button>
+          <button class="${adminTab==='scored'?'active':''}" data-t="scored">Scored submissions</button>
+        </div>
+        <div id="adminTabBody"><p class="small">Loading…</p></div>`;
+      document.querySelectorAll('.tabbar button').forEach(b=> b.onclick=()=>{ adminTab=b.dataset.t; render(); });
+      const body = adminTab==='queue'? await renderAdminQueue() : adminTab==='applicants'? await renderAdminApplicants() : await renderAdminScored();
+      document.getElementById('adminTabBody').innerHTML = body;
+      wireAdminEvents();
+    }
+  }
+  saveSession();
+}
+
+async function startApp(){
+  await loadSession();
+  await render();
+  checkAdminHash();
+  if(!CONFIG.webAppUrl && (typeof window.storage === 'undefined')){
+    toast('No storage backend detected — data will not be saved. Configure the Sheets backend in CONFIG, or open this inside Claude.', 'error');
+  }
+}
+startApp();
+</script>
+</body>
+</html>
