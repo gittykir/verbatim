@@ -132,7 +132,7 @@ footer{border-top:1px solid var(--line);padding:28px 32px;font-size:12.5px;color
 <div class="topbar">
   <div class="brand">
     <svg class="brand-mark" viewBox="0 0 40 40"><polygon points="20,3 35,14 29,34 11,34 5,14" fill="none" stroke="#a9843c" stroke-width="2"/><circle cx="20" cy="20" r="3" fill="#2f6b67"/></svg>
-    <div><div class="brand-name">Verbatim Standard</div><div class="brand-tag">Independent Translator Verification</div></div>
+    <div><div class="brand-name">Verbatim Standard</div><div class="brand-tag">Independent Translation Verifier </div></div>
   </div>
   <nav id="nav"></nav>
 </div>
@@ -211,7 +211,7 @@ const dialCodeFor = name => { const m = COUNTRIES.find(c=>c.name===name); return
 
 const PASSAGES = {
   EN: [
-    {id:'EN1', title:'Microgrids', text:"In the hills outside Nakuru, a cooperative of smallholder farmers recently financed a solar microgrid that now powers three villages after dark. The project took eighteen months longer than planned, mostly because the original battery supplier could not guarantee delivery through the rainy season. What made the difference, according to the project's engineer, was not the hardware but the willingness of residents to renegotiate tariffs twice as usage patterns shifted. Streetlights that once switched off at nine now stay lit until the last matatu passes. Shopkeepers report a modest but steady rise in evening trade. None of this was in the original feasibility study, which focused almost entirely on generation capacity rather than on how a community actually lives with power once it arrives."},
+    {id:'EN1', title:'Microgrids', text:"In the hills outside Italy, a cooperative of smallholder farmers recently financed a solar microgrid that now powers three villages after dark. The project took eighteen months longer than planned, mostly because the original battery supplier could not guarantee delivery through the rainy season. What made the difference, according to the project's engineer, was not the hardware but the willingness of residents to renegotiate tariffs twice as usage patterns shifted. Streetlights that once switched off at nine now stay lit until the last matatu passes. Shopkeepers report a modest but steady rise in evening trade. None of this was in the original feasibility study, which focused almost entirely on generation capacity rather than on how a community actually lives with power once it arrives."},
     {id:'EN2', title:'Bakery', text:"My grandmother kept her bread recipe in a notebook so worn that entire lines had dissolved into the grease of forty years' handling. When we finally reopened her bakery last spring, we typed the recipe up properly, converted the measurements, and installed a proofing cabinet she would have found faintly absurd. The bread tastes almost the same, though our baker insists the difference is in the water, not the method. Regular customers seem not to notice, or perhaps they are simply too polite to say. What has changed is the queue: it now forms before we unlock the door, something that never happened in her time, when the smell alone was enough to draw people in slowly."},
   ],
   ES: [
@@ -239,8 +239,8 @@ const PASSAGES = {
 // to Google Sheets + Drive. Leave blank to keep using this prototype's local
 // storage (the session-only data below always stays local either way).
 const CONFIG = {
-  webAppUrl: '',
-  sharedSecret: 'meridian-dev-key', // must match SHARED_SECRET in the Apps Script
+  webAppUrl: 'https://script.google.com/macros/s/AKfycbzPmLLCGRwRgUw1DUExygxZcTr1UEmsTlDNLqEmBOCD-Vm42p3gRL9gCryb_kAdMtyd/exec',
+  sharedSecret: 'Verbatim', // must match SHARED_SECRET in the Apps Script
   // Client-side gate only — visible to anyone who views this file's source.
   // It deters casual access, not a determined visitor. Change it periodically,
   // and treat the review queue as effectively public until this moves server-side.
@@ -568,8 +568,8 @@ function renderHome(){
   <section class="hero">
     <div class="eyebrow">Quality-first translator hiring</div>
     <h1>We grade translations on quality.</h1>
-    <p class="lead">Verbatim Standard is an independent verification service. We confirm identity, put translation skill to the test across five languages, and hand back a merit-ranked, evidence-backed result. No timers to beat — just work that holds up to scrutiny.</p>
-    <p class="small" style="color:var(--gold);font-weight:600;letter-spacing:.02em;margin-top:2px;">Employers send us their shortlist — we handle identity and skill verification independently.</p>
+    <p class="lead">Verbatim Standard is an independent verification service. We confirm identity, put translation skill to the test across five languages, and hand back a merit-ranked, evidence-backed result. No timers to beat, just work that holds up to scrutiny.</p>
+    <p class="small" style="color:var(--gold);font-weight:600;letter-spacing:.02em;margin-top:2px;">Employers send us their shortlist, we handle identity and skill verification independently.</p>
     <div style="margin-top:22px;"><button class="btn" onclick="setView('register')">Start your application</button> <button class="btn secondary" onclick="setView('apply')">Continue an application</button></div>
   </section>
 
@@ -578,13 +578,13 @@ function renderHome(){
   <div class="grid2">
     <div class="card">
       <h3>How the language tracks work</h3>
-      <p class="small">Choose translation tracks between any two of five languages. A track is directional — choosing English → French does not include French → English. You may add as many non-reverse tracks as you like.</p>
+      <p class="small">Choose translation tracks between any two of five languages. A track is directional, choosing English → French does not include French → English. You may add as many non-reverse tracks as you like.</p>
       <div class="pentagon-wrap">${renderPentagonSVG([{from:'EN',to:'FR'},{from:'FR',to:'DE'},{from:'ES',to:'IT'}])}</div>
       <p class="hint">Example shown: EN→FR, FR→DE, ES→IT. Note FR→EN and IT→ES would be blocked as reverse duplicates of the same pair.</p>
     </div>
     <div class="card">
       <h3>What we assess</h3>
-      <p class="small">Each track presents a short source passage. You translate it once, without external tools or pasted text, under normal working conditions. Reviewers score for accuracy, register, and natural phrasing — not for turnaround time.</p>
+      <p class="small">Each track presents a short source passage. You translate it once, without external tools or pasted text, under normal working conditions. Reviewers score for accuracy, register, and natural phrasing, not for turnaround time.</p>
       <ul class="small">
         <li>One passage per track, ~150–180 words</li>
         <li>Pasting into the answer field is disabled and logged</li>
@@ -608,7 +608,7 @@ function renderHome(){
         <li>Your country/region, to apply the correct regional ID requirements</li>
       </ul>
     </div>
-    <div class="notice">This information is collected and recorded <strong>solely to verify your identity and to cross-check it against your assessment submission</strong> — for example, to confirm the same person who registered is the one who completed the translation. It is not used for any other purpose, and this notice is the same one shown to every applicant before they submit anything.</div>
+    <div class="notice">This information is collected and recorded <strong>solely to verify your identity and to cross-check it against your assessment submission</strong>, for example, to confirm the same person who registered is the one who completed the translation. It is not used for any other purpose, and this notice is the same one shown to every applicant before they submit anything.</div>
   </div>
   `;
 }
@@ -680,7 +680,7 @@ function renderRegisterStep2(){
   ${stepBar()}
   <p class="small">Tap a source language, then a target language, to add a directional track. Reverse pairs of a track you've already chosen are blocked automatically.</p>
   <div class="pentagon-wrap">${renderPentagonSVG(regTracks, {selA: window._pendingA})}</div>
-  <div id="pendingMsg" class="hint" style="text-align:center;">${window._pendingA? ('Source selected: '+langName(window._pendingA)+' — now choose a target language.') : 'Choose a source language to begin.'}</div>
+  <div id="pendingMsg" class="hint" style="text-align:center;">${window._pendingA? ('Source selected: '+langName(window._pendingA)+' , now choose a target language.') : 'Choose a source language to begin.'}</div>
   <div class="divider"></div>
   <div>
     <label>Selected tracks</label>
@@ -723,7 +723,7 @@ function renderRegisterStep3(){
 function renderRegisterDone(id){
   return `
   <h2>You're registered</h2>
-  <p class="small">Save this reference code — you'll need it, together with your phone number, to continue to the assessment.</p>
+  <p class="small">Save this reference code, you'll need it, together with your phone number, to continue to the assessment.</p>
   <div class="ref-box"><div class="small" style="color:#cfd3c8;">Your reference code</div><div class="code mono">${id}</div></div>
   <div style="text-align:center;"><button class="btn" onclick="setView('apply')">Go to assessment →</button></div>
   `;
@@ -893,12 +893,12 @@ function renderAssessWarn(){
   <div class="notice brick">
     <strong>This assessment is monitored, and reviewers see the results:</strong>
     <ul style="margin:8px 0 0;padding-left:20px;">
-      <li>Pasting text into your answer is disabled — attempts are counted and shown to reviewers.</li>
-      <li>Switching tabs, switching apps, or leaving this page is detected and timed — the count and time away are shown to reviewers.</li>
+      <li>Pasting text into your answer is disabled, attempts are counted and shown to reviewers.</li>
+      <li>Switching tabs, switching apps, or leaving this page is detected and timed, the count and time away are shown to reviewers.</li>
       <li>The source text can't be copied, and right-click is disabled on it.</li>
     </ul>
   </div>
-  <p class="small">None of this is meant to catch you out — it's there so reviewers can trust that the translation in front of them is genuinely yours, done on your own knowledge. Once you start, you won't be able to pause the clock, so make sure you're ready before continuing.</p>
+  <p class="small">None of this is meant to catch you out, it's there so reviewers can trust that the translation in front of them is genuinely yours, done on your own knowledge. Once you start, you won't be able to pause the clock, so make sure you're ready before continuing.</p>
   <div style="margin-top:20px;display:flex;justify-content:space-between;">
     <button class="btn secondary" id="cancelAssess">← Not yet, take me back</button>
     <button class="btn gold" id="beginAssess">I understand — begin assessment</button>
@@ -911,7 +911,7 @@ function renderAssessment(){
   const wc = wordCount(document.getElementById && document.getElementById('answerBox') ? document.getElementById('answerBox').value : '');
   return `
   <h2>Assessment — ${langName(a.from)} → ${langName(a.to)}</h2>
-  <div class="notice teal">Translate the passage below into ${langName(a.to)}. As explained before you started: pasting and tab switches are logged and visible to reviewers. Take the time you need to get it right — this is scored on quality, not speed.</div>
+  <div class="notice teal">Translate the passage below into ${langName(a.to)}. As explained before you started: pasting and tab switches are logged and visible to reviewers. Take the time you need to get it right, this is scored on quality, not speed.</div>
   <label>Source text (${langName(a.from)})</label>
   <div class="passage-box" oncopy="return false" oncontextmenu="return false">${esc(a.passage.text)}</div>
   <label>Your translation (${langName(a.to)})</label>
@@ -934,7 +934,7 @@ function wireAssessmentEvents(){
   box.addEventListener('drop', (e)=>{ e.preventDefault(); activeAssessment.pasteAttempts++; warn.style.display='block'; setTimeout(()=>warn.style.display='none', 2500); });
   document.getElementById('submitAssess').onclick = async ()=>{
     const text = box.value.trim();
-    if(wordCount(text) < 20){ toast('Your translation looks very short — please review before submitting.', 'error'); return; }
+    if(wordCount(text) < 20){ toast('Your translation looks very short, please review before submitting.', 'error'); return; }
     const proceed = await confirmDialog('Submit this translation? You will not be able to edit it afterward.');
     if(!proceed) return;
     const a = activeAssessment;
@@ -1096,7 +1096,7 @@ async function renderAdminDetail(id){
         <tr><th>Tracks</th><td>${a.tracks.map(t=>langName(t.from)+' → '+langName(t.to)).join(', ')}</td></tr>
         <tr><th>Registered</th><td>${new Date(a.createdAt).toLocaleString()}</td></tr>
       </table>
-      <div class="hint">Document filenames only — image content isn't stored in this prototype. See the KYC backend plan for secure document storage.</div>
+      <div class="hint">Document filenames only, image content isn't stored in this prototype. See the KYC backend plan for secure document storage.</div>
     </div>
     <div class="card">
       <h3>Review decision</h3>
@@ -1248,7 +1248,7 @@ async function startApp(){
   await render();
   checkAdminHash();
   if(!CONFIG.webAppUrl && (typeof window.storage === 'undefined')){
-    toast('No storage backend detected — data will not be saved. Configure the Sheets backend in CONFIG, or open this inside Claude.', 'error');
+    toast('No storage backend detected, data will not be saved. Configure the Sheets backend in CONFIG, or open this inside Claude.', 'error');
   }
 }
 startApp();
